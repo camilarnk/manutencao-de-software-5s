@@ -1,0 +1,310 @@
+# Lista de Revisão — Manutenção de Software
+
+Esta lista reúne **30 atividades de revisão** baseadas nos conteúdos trabalhados nas atividades anteriores da disciplina: código limpo, legibilidade, comentários, formatação, funções, refatoração, Strategy, Singleton e Adapter.
+
+---
+
+## Parte 1 — Código Limpo, Legibilidade e Comentários
+
+### 1. Conceito de código limpo
+
+O Clean Code envolve técnicas de boas praticas de organização na programação,
+para facilitar o entendimento a longo prazo por qualquer programador que ler o código, 
+com nomes de funções e variáveis descritivos, que contribuem para o entendimento da lógica,
+diminuindo a chance de erros futuros, facilitando a adição de funcionalidades e a colaboração
+entre diferentes desenvolvedores.  
+
+---
+
+### 2. Avaliação de nomes de variáveis.
+
+Analise os nomes abaixo:
+
+```java
+int x;
+int dias;
+int diasDesdeUltimoLogin;
+double v;
+double valorTotalPedido;
+```
+
+Responda:
+
+a) Quais nomes são mais legíveis?  
+diasDesdeUltimoLogin, valorTotalPedido.  
+b) Quais nomes são vagos?  
+x, dias e v.  
+c) O que um bom nome deve comunicar ao leitor do código?  
+deve comunicar o que a variável/método realiza.  
+
+---
+
+## Parte 2 — Formatação de Código
+
+### 7. Formatação vertical
+
+```java
+public class PedidoService {
+
+    public void fecharPedido(String cliente, double subtotal, double frete) {
+        double total = calcularTotal(subtotal, frete);
+        imprimirResumo(cliente, total);
+    }
+
+    private double calcularTotal(double subtotal, double frete) {
+        return subtotal + frete;
+    }
+
+    private void imprimirResumo(String cliente, double total) {
+        System.out.println(cliente + ": " + total);
+    }
+}
+```
+
+Com essa reformulação, os métodos chamadores passam a ser acima dos métodos chamados, melhorando a legibilidade e seguinte os princípios de clean code.
+
+---
+
+### 8. Separação de conceitos
+
+```java
+public void cadastrarProduto(String nome, double preco) {
+
+    String nomeFormatado = nome.trim().toUpperCase();
+    boolean precoValido = preco > 0;
+
+    if (!precoValido) {
+        System.out.println("Preço inválido");
+        return;
+    }
+
+    System.out.println("Produto: " + nomeFormatado);
+    System.out.println("Preço: " + preco);
+    System.out.println("Cadastro finalizado");
+}
+```
+
+---
+
+### 9. Formatação horizontal
+
+```java
+public void gerarRelatorio(String cliente, String email, double total, boolean premium, boolean pagamentoEmDia) {
+
+    boolean clienteEspecial = premium && pagamentoEmDia && total > 1000;
+
+    if (clienteEspecial) {
+        System.out.println("Relatório especial para " + cliente + " enviado para " + email + " com total de " + total);
+    }
+}
+```
+
+---
+
+### 10. Indentação
+
+```java
+public void verificarAcesso(boolean ativo, boolean admin) {
+  if (ativo) {
+    if (admin) {
+      System.out.println("Acesso administrativo");
+    } else {
+      System.out.println("Acesso comum");
+    }
+  } else {
+    System.out.println("Usuário inativo");
+  }
+}
+```
+
+---
+
+### 11. Afinidade conceitual
+
+```java
+public class UsuarioUtils {
+    public void enviarEmail(String email) {
+        System.out.println("Enviando e-mail para " + email);
+    }
+
+    public void enviarNotificacao(String mensagem) {
+        System.out.println(mensagem);
+    }
+
+    public String formatarCPF(String cpf) {
+        return cpf.replace(".", "").replace("-", "");
+    }
+
+    public String formatarNome(String nome) {
+        return nome.trim().toUpperCase();
+    }
+}
+```
+
+O método utilizado foi o de coesão (afinidade conceitual), onde responsabilidades semelhantes devem estar próximas umas das outras.
+
+---
+
+## Parte 3 — Código Limpo: Funções
+
+### 12. Função com muitas responsabilidades
+
+Analise a função abaixo:
+
+```java
+public void finalizarPedido(Cliente cliente, Carrinho carrinho) {
+    double total = 0;
+
+    for (Item item : carrinho.getItens()) {
+        total += item.getPreco() * item.getQuantidade();
+    }
+
+    Pedido pedido = new Pedido(cliente, carrinho.getItens(), total);
+    pedidoRepository.salvar(pedido);
+
+    emailService.enviar(cliente.getEmail(), "Pedido confirmado");
+}
+```
+Faça o que se pede:
+
+a) Identifique as responsabilidades da função.  
+a função finaliza os pedidos, somando o valor do carrinho, criando o novo pedido, e enviando pelo email.  
+b) Explique por que isso prejudica a manutenção.  
+pois ela tem muitas responsabilidades, além de não descrever tudo o que realmente é realizado.  
+c) Reescreva dividindo a lógica em funções menores.
+```java
+public void finalizarPedido(Cliente cliente, Carrinho carrinho) {
+    double total = somarValorCarrinho(carrinho);
+
+    Pedido pedido = new Pedido(cliente, carrinho.getItens(), total);
+    pedidoRepository.salvar(pedido);
+
+    enviarConfirmacaoEmail(cliente);
+}
+
+public double somarValorCarrinho(Carrinho carrinho) {
+    double total = 0;
+
+    for (Item item : carrinho.getItens()) {
+        total += item.getPreco() * item.getQuantidade();
+    }
+
+    return total;
+}
+
+public void enviarConfirmacaoEmail(Cliente cliente) {
+  emailService.enviar(cliente.getEmail(), "Pedido confirmado");
+}
+```
+
+---
+
+### 13. Nome pouco descritivo
+
+Analise o método:
+
+```java
+public boolean verificar(Usuario usuario) {
+    return usuario.getIdade() >= 18 && usuario.isAtivo();
+}
+```
+Faça o que se pede:
+
+a) Explique o problema do nome verificar.  
+o nome não explica o que é verificado.  
+b) Proponha um nome mais descritivo.  
+isMaiorIdadeEAtivo.  
+c) Reescreva o método com o novo nome.  
+```java
+public boolean isMaiorIdadeEAtivo(Usuario usuario) {
+    return usuario.getIdade() >= 18 && usuario.isAtivo();
+}
+```
+
+---
+
+### 14. Função com muitos argumentos
+
+Analise a função:
+```java
+public void cadastrarAluno(
+    String nome,
+    String cpf,
+    String email,
+    String telefone,
+    String curso,
+    int periodo
+) {
+    Aluno aluno = new Aluno();
+    aluno.setNome(nome);
+    aluno.setCpf(cpf);
+    aluno.setEmail(email);
+    aluno.setTelefone(telefone);
+    aluno.setCurso(curso);
+    aluno.setPeriodo(periodo);
+
+    alunoRepository.salvar(aluno);
+}
+```
+Faça o que se pede:
+
+a) Explique por que muitos argumentos dificultam o uso da função.  
+pois pode ser difícil interpretar de onde cada argumento vem no código, suas responsabilidades, além de dificultar a manutenção e os testes.  
+b) Crie uma classe ou objeto para agrupar os dados de cadastro.  
+
+c) Reescreva a função recebendo esse objeto como parâmetro.  
+```java
+public void cadastrarAluno(Aluno aluno) {
+    alunoRepository.salvar(aluno);
+}
+```
+
+---
+
+### 15. Efeito colateral escondido
+
+Analise a função:
+
+```java
+public boolean usuarioExiste(String email) {
+    Usuario usuario = usuarioRepository.buscarPorEmail(email);
+
+    if (usuario == null) {
+        usuarioRepository.salvar(new Usuario(email));
+        return false;
+    }
+
+    return true;
+}
+```
+Responda:
+
+a) O que o nome da função sugere que ela faz?  
+verifica se o usuario existe ou nao no sistema.  
+b) O que ela faz além disso?  
+salva o usuario no sistema.  
+c) Por que isso é um efeito colateral?  
+pois o nome do metodo não explica exatamente o que é feito, dificultando a leitura e manutenção.  
+d) Reescreva separando verificação e criação do usuário.  
+```java
+public boolean usuarioExiste(String email) {
+    Usuario usuario = usuarioRepository.buscarPorEmail(email);
+
+    if (usuario == null) {
+        return false;
+    }
+
+    return true;
+}
+
+public void salvarUsuario(String email) {
+  if (usuario == null) {
+       usuarioRepository.salvar(new Usuario(email));
+  }
+}
+```
+
+
+
+
+
