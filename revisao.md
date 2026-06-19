@@ -391,7 +391,11 @@ Crie variáveis com nomes que expliquem cada condição importante.
 
 ```java
 public void verificarAprovacao(double notaFinal, int frequencia, boolean fezRecuperacao) {
-    if ((notaFinal >= 6.0 && frequencia >= 75) || (fezRecuperacao && notaFinal >= 5.0 && frequencia >= 80)) {
+
+    boolean isAprovadoNotaEFrequencia = notaFinal >= 6.0 && frequencia >= 75;
+    boolean isAprovadoRecuperacao = fezRecuperacao && notaFinal >= 5.0 && frequencia >= 80;
+
+    if (isAprovadoNotaEFrequencia || isAprovadoRecuperacao) {
         System.out.println("Aluno aprovado");
     } else {
         System.out.println("Aluno reprovado");
