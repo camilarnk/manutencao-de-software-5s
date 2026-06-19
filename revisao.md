@@ -304,7 +304,97 @@ public void salvarUsuario(String email) {
 }
 ```
 
+---
 
+## Parte 4 — Refatoração Básica
 
+### 18. Extract Method
 
+Refatore o método abaixo usando Extract Method.
 
+```java
+public void emitirRecibo(String cliente, int quantidade, double precoUnitario) {
+    double subtotal = quantidade * precoUnitario;
+    double imposto = subtotal * 0.10;
+    double total = subtotal + imposto;
+
+    System.out.println("Cliente: " + cliente);
+    System.out.println("Quantidade: " + quantidade);
+    System.out.println("Subtotal: " + subtotal);
+    System.out.println("Imposto: " + imposto);
+    System.out.println("Total: " + total);
+
+    if (total > 500) {
+        System.out.println("Compra de alto valor");
+    }
+}
+```
+Extraia métodos para:
+
+calcular subtotal;
+calcular imposto;
+imprimir recibo;
+verificar compra de alto valor.
+
+```java
+public void emitirRecibo(String cliente, int quantidade, double precoUnitario) {
+    double subtotal = calcularSubtotal(quantidade, precoUnitario);
+    double imposto = calcularImposto(subtotal);
+    double total = subtotal + imposto;
+
+    imprimirRecibo(cliente, quantidade, subtotal, imposto, total);
+
+    verificarCompraAltoValor(total);
+}
+
+public double calcularSubtotal(int quantidade, double precoUnitario) {
+    return quantidade * precoUnitario;
+}
+
+public double calcularImposto(int subtotal) {
+    return subtotal * 0.10;
+}
+
+public void imprimirRecibo(String cliente, int quantidade,
+        double subtotal, double imposto, double total) {
+
+    System.out.println("Cliente: " + cliente);
+    System.out.println("Quantidade: " + quantidade);
+    System.out.println("Subtotal: " + subtotal);
+    System.out.println("Imposto: " + imposto);
+    System.out.println("Total: " + total);
+}
+
+public void verificarCompraAltoValor(double total) {
+    if (total > 500) {
+        System.out.println("Compra de alto valor");
+    }
+}
+```
+
+---
+
+### 19. Extract Variable
+
+Refatore o código abaixo usando Extract Variable.
+
+```java
+public void verificarAprovacao(double notaFinal, int frequencia, boolean fezRecuperacao) {
+    if ((notaFinal >= 6.0 && frequencia >= 75) || (fezRecuperacao && notaFinal >= 5.0 && frequencia >= 80)) {
+        System.out.println("Aluno aprovado");
+    } else {
+        System.out.println("Aluno reprovado");
+    }
+}
+```
+Crie variáveis com nomes que expliquem cada condição importante.
+
+```java
+public void verificarAprovacao(double notaFinal, int frequencia, boolean fezRecuperacao) {
+    if ((notaFinal >= 6.0 && frequencia >= 75) || (fezRecuperacao && notaFinal >= 5.0 && frequencia >= 80)) {
+        System.out.println("Aluno aprovado");
+    } else {
+        System.out.println("Aluno reprovado");
+    }
+}
+```
