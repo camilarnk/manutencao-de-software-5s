@@ -402,3 +402,120 @@ public void verificarAprovacao(double notaFinal, int frequencia, boolean fezRecu
     }
 }
 ```
+
+---
+
+## Parte 5 — Refatoração Orientada a Objetos
+
+### 22. Move Method
+
+Analise o cenário:
+
+A classe PedidoService possui o método abaixo:
+
+```java
+public double calcularTotalPedido(Pedido pedido) {
+    return pedido.getSubtotal() + pedido.getFrete() - pedido.getDesconto();
+}
+```
+O método usa apenas dados da classe Pedido.
+
+Faça o que se pede:
+
+a) Explique por que esse método pode estar na classe errada.  
+o metodo pode estar na classe errada porque ele utiliza apenas dados da própria classe Pedido. Pelo princípio de coesão, comportamentos que dependem exclusivamente dos atributos de uma classe devem ficar nela mesma. Assim, o cálculo do total é responsabilidade de pedido, e não de pedidoService
+   
+b) Mova o método para a classe Pedido.  
+```java
+public class Pedido {
+    private double subtotal;
+    private double frete;
+    private double desconto;
+
+    public double calcularTotalPedido() {
+        return subtotal + frete - desconto;
+    }
+}
+```
+   
+c) Ajuste a chamada em PedidoService.  
+```java
+public class PedidoService {
+    public double calcularTotalPedido() {
+         pedido.calcularTotalPedido(pedido);
+    }
+}
+
+```
+
+---
+
+### 23. Move Field
+
+Analise o cenário:
+
+A classe Produto possui os campos:
+
+```java
+private LocalDate dataCompra;
+private LocalDate dataValidadeGarantia;
+```
+Esses dados não descrevem o produto em geral, mas sim uma compra específica.
+
+Faça o que se pede:
+
+a) Explique por que esses campos podem estar na classe errada.  
+Os campos não representam características do produto, mas sim informações relacionadas a uma compra específica desse produto. Como um mesmo produto pode ser comprado várias vezes em datas diferentes e possuir garantias distintas, esses atributos pertencem melhor a uma classe que represente a compra.
+   
+b) Crie uma classe ItemPedido ou CompraProduto.    
+c) Mova os campos para a nova classe.  
+```java
+public class CompraProduto {
+    private Produto produto;
+    private LocalDate dataCompra;
+    private LocalDate dataValidadeGarantia;
+}
+```
+
+---
+
+### 24. Extract Class
+
+Analise a classe abaixo:
+
+```java
+public class Cliente {
+    private String nome;
+    private String cpf;
+    private String email;
+    private String banco;
+    private String agencia;
+    private String conta;
+    private String metodoPagamentoPreferencial;
+}
+```
+Faça o que se pede:
+
+a) Identifique o grupo de atributos que forma outro conceito.  
+banco, agencia, conta e metodoPagamentoPreferencial, pois descrevem o conceito de dados de cobrança, e nao representam a entidade
+cliente em si.
+  
+b) Crie uma classe DadosCobranca.  
+```java
+public class DadosCobranca {
+    private String banco;
+    private String agencia;
+    private String conta;
+    private String metodoPagamentoPreferencial;
+}
+```
+  
+c) Atualize Cliente para usar essa nova classe.  
+```java
+public class Cliente {
+    private String nome;
+    private String cpf;
+    private String email;
+    private DadosCobranca dadosCobranca;
+}
+```
