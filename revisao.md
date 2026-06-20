@@ -31,9 +31,11 @@ double valorTotalPedido;
 Responda:
 
 a) Quais nomes são mais legíveis?  
-diasDesdeUltimoLogin, valorTotalPedido.  
+diasDesdeUltimoLogin, valorTotalPedido. 
+  
 b) Quais nomes são vagos?  
 x, dias e v.  
+  
 c) O que um bom nome deve comunicar ao leitor do código?  
 deve comunicar o que a variável/método realiza.  
 
@@ -168,9 +170,11 @@ public void finalizarPedido(Cliente cliente, Carrinho carrinho) {
 Faça o que se pede:
 
 a) Identifique as responsabilidades da função.  
-a função finaliza os pedidos, somando o valor do carrinho, criando o novo pedido, e enviando pelo email.  
+a função finaliza os pedidos, somando o valor do carrinho, criando o novo pedido, e enviando pelo email. 
+  
 b) Explique por que isso prejudica a manutenção.  
 pois ela tem muitas responsabilidades, além de não descrever tudo o que realmente é realizado.  
+  
 c) Reescreva dividindo a lógica em funções menores.
 ```java
 public void finalizarPedido(Cliente cliente, Carrinho carrinho) {
@@ -212,8 +216,10 @@ Faça o que se pede:
 
 a) Explique o problema do nome verificar.  
 o nome não explica o que é verificado.  
+  
 b) Proponha um nome mais descritivo.  
 isMaiorIdadeEAtivo.  
+  
 c) Reescreva o método com o novo nome.  
 ```java
 public boolean isMaiorIdadeEAtivo(Usuario usuario) {
@@ -250,8 +256,8 @@ Faça o que se pede:
 
 a) Explique por que muitos argumentos dificultam o uso da função.  
 pois pode ser difícil interpretar de onde cada argumento vem no código, suas responsabilidades, além de dificultar a manutenção e os testes.  
+  
 b) Crie uma classe ou objeto para agrupar os dados de cadastro.  
-
 c) Reescreva a função recebendo esse objeto como parâmetro.  
 ```java
 public void cadastrarAluno(Aluno aluno) {
@@ -280,11 +286,14 @@ public boolean usuarioExiste(String email) {
 Responda:
 
 a) O que o nome da função sugere que ela faz?  
-verifica se o usuario existe ou nao no sistema.  
+verifica se o usuario existe ou nao no sistema. 
+  
 b) O que ela faz além disso?  
 salva o usuario no sistema.  
+  
 c) Por que isso é um efeito colateral?  
-pois o nome do metodo não explica exatamente o que é feito, dificultando a leitura e manutenção.  
+pois o nome do metodo não explica exatamente o que é feito, dificultando a leitura e manutenção. 
+  
 d) Reescreva separando verificação e criação do usuário.  
 ```java
 public boolean usuarioExiste(String email) {
@@ -519,3 +528,44 @@ public class Cliente {
     private DadosCobranca dadosCobranca;
 }
 ```
+
+---
+
+### 25. Introduce Local Extension
+
+Um sistema financeiro usa diretamente BigDecimal para representar dinheiro.
+
+Crie uma classe ValorMonetario que encapsule um BigDecimal e ofereça os métodos:
+```java
+formatarEmReais()
+ehAltoValor()
+getValor()
+```
+Depois, explique por que essa classe melhora a expressividade do domínio.
+
+```java
+public class ValorMonetario {
+    private BigDecimal valor;
+
+    public ValorMonetario(BigDecimal valor) {
+        this.valor = valor;
+    }
+
+    public String formatarEmReais() {
+        return "R$ "
+                + valor.setScale(2, RoundingMode.HALF_UP)
+                .toString()
+                .replace(".", ",");
+    }
+
+    public boolean ehAltoValor() {
+        return valor.compareTo(new BigDecimal("50000.00")) >= 0;
+    }
+
+    public BigDecimal getValor() {
+        return valor;
+    }
+}
+```
+a classe melhora a expressividade do domínio porque representa explicitamente o conceito de dinheiro dentro do sistema, em vez de utilizar diretamente um BigDecimal, que é uma classe genérica da biblioteca Java. Além disso, ela centraliza comportamentos relacionados a valores monetários, como formatação e validações de negócio (ehAltoValor()), aumentando a coesão e tornando o código mais legível e fácil de manter.
+
