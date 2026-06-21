@@ -721,3 +721,100 @@ public class Main {
 ---
 
 ### 28. Singleton para configurações globais
+
+Implemente uma classe ConfiguracaoSistema usando Singleton.
+
+A classe deve armazenar:
+
+- nome da aplicação;
+- ambiente de execução;
+- URL do banco de dados;
+- chave de API.
+Depois, demonstre o uso da classe em um método main.
+
+```java
+public class ConfiguracaoSistema {
+
+    private static ConfiguracaoSistema instancia;
+
+    private String nomeAplicacao;
+    private String ambienteExecucao;
+    private String urlBancoDados;
+    private String chaveApi;
+
+    private ConfiguracaoSistema() {}
+
+    public static ConfiguracaoSistema getInstancia() {
+        if (instancia == null) {
+            instancia = new ConfiguracaoSistema();
+        }
+        return instancia;
+    }
+
+    public String getNomeAplicacao() {
+        return nomeAplicacao;
+    }
+
+    public void setNomeAplicacao(String nomeAplicacao) {
+        this.nomeAplicacao = nomeAplicacao;
+    }
+
+    public String getAmbienteExecucao() {
+        return ambienteExecucao;
+    }
+
+    public void setAmbienteExecucao(String ambienteExecucao) {
+        this.ambienteExecucao = ambienteExecucao;
+    }
+
+    public String getUrlBancoDados() {
+        return urlBancoDados;
+    }
+
+    public void setUrlBancoDados(String urlBancoDados) {
+        this.urlBancoDados = urlBancoDados;
+    }
+
+    public String getChaveApi() {
+        return chaveApi;
+    }
+
+    public void setChaveApi(String chaveApi) {
+        this.chaveApi = chaveApi;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ConfiguracaoSistema config = ConfiguracaoSistema.getInstancia();
+
+        config.setNomeAplicacao("Sistema Financeiro");
+        config.setAmbienteExecucao("Produção");
+        config.setUrlBancoDados("localhost:0000/sistema");
+        config.setChaveApi("ABC123");
+
+        System.out.println(config.getNomeAplicacao());
+
+        ConfiguracaoSistema outra = ConfiguracaoSistema.getInstancia();
+
+        System.out.println(config == outra);
+    }
+}
+```
+
+---
+
+### 29. Strategy + Singleton
+
+Crie um sistema de descontos em que cada estratégia consulte uma configuração global.
+
+O sistema deve conter:
+
+- estratégias de desconto;
+- uma classe Singleton ConfiguracaoDesconto;
+- um desconto máximo permitido;
+- validação para impedir que uma estratégia ultrapasse o desconto máximo.
+Explique por que essa solução combina Strategy e Singleton.
+
+
+
