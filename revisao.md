@@ -569,3 +569,155 @@ public class ValorMonetario {
 ```
 a classe melhora a expressividade do domínio porque representa explicitamente o conceito de dinheiro dentro do sistema, em vez de utilizar diretamente um BigDecimal, que é uma classe genérica da biblioteca Java. Além disso, ela centraliza comportamentos relacionados a valores monetários, como formatação e validações de negócio (ehAltoValor()), aumentando a coesão e tornando o código mais legível e fácil de manter.
 
+---
+
+## Parte 6 — Padrões de Projeto
+
+### 26. Strategy para cálculo de desconto
+
+Refatore o código abaixo usando Strategy.
+```java
+public double calcularDesconto(String tipoCliente, double valorCompra) {
+    if (tipoCliente.equals("COMUM")) {
+        return valorCompra * 0.05;
+    } else if (tipoCliente.equals("VIP")) {
+        return valorCompra * 0.10;
+    } else if (tipoCliente.equals("FUNCIONARIO")) {
+        return valorCompra * 0.20;
+    }
+
+    return 0;
+}
+```
+Sua solução deve conter:
+
+uma interface EstrategiaDesconto;
+uma estratégia para cliente comum;
+uma estratégia para cliente VIP;
+uma estratégia para funcionário;
+uma classe que aplique a estratégia escolhida.
+
+```java
+public interface EstrategiaDesconto {
+    double calcularDesconto(double valorCompra);
+}
+
+public class ClienteComum implements EstrategiaDesconto {
+    @Override
+    public double calcularDesconto(double valorCompra) {
+        return valorCompra * 0.05;
+    }
+}
+
+public class ClienteVIP implements EstrategiaDesconto {
+    @Override
+    public double calcularDesconto(double valorCompra) {
+        return valorCompra * 0.10;
+    }
+}
+
+public class Funcionario implements EstrategiaDesconto {
+    @Override
+    public double calcularDesconto(double valorCompra) {
+        return valorCompra * 0.20;
+    }
+}
+
+public class CalculadoraDesconto {
+    private EstrategiaDesconto desconto;
+
+    public void setDesconto(EstrategiaDesconto desconto) {
+        this.desconto = desconto;
+    }
+
+    public double calcularDesconto(double valorCompra) {
+        return desconto.calcularDesconto(valorCompra);
+    }
+
+}
+```
+
+---
+
+### 27. Strategy para pagamento
+
+Projete uma solução usando **Strategy** para processar diferentes formas de pagamento:
+
+- cartão de crédito;
+- Pix;
+- boleto;
+- vale-presente.
+
+Cada forma de pagamento deve possuir uma lógica própria de processamento.
+
+Crie também uma classe `ProcessadorPagamento` que receba a estratégia escolhida.
+
+```java
+public interface EstrategiaPagamento {
+    void processarPagamento(double valor);
+}
+
+public class ProcessadorPagamento {
+    private EstrategiaPagamento pagamento;
+
+    public void setPagamento(EstrategiaPagamento pagamento) {
+        this.pagamento = pagamento;
+    }
+
+    public void processarPagamento(double valor) {
+        pagamento.processarPagamento(valor);
+    }
+}
+
+public class CartaoCredito implements EstrategiaPagamento {
+    @Override
+    public void processarPagamento(double valor) {
+        System.out.println("Pagamento de R$ " + valor + " feito com cartão de crédito.");
+    }
+}
+
+public class Pix implements EstrategiaPagamento {
+    @Override
+    public void processarPagamento(double valor) {
+        System.out.println("Pagamento de R$ " + valor + " feito com pix.");
+    }
+}
+
+public class Boleto implements EstrategiaPagamento {
+    @Override
+    public void processarPagamento(double valor) {
+        System.out.println("Pagamento de R$ " + valor + " feito com boleto.");
+    }
+}
+
+public class ValePresente implements EstrategiaPagamento {
+    @Override
+    public void processarPagamento(double valor) {
+        System.out.println("Pagamento de R$ " + valor + " feito com vale-presente.");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ProcessadorPagamento pagamento = new ProcessadorPagamento();
+        double valor = 100.0;
+
+        pagamento.setPagamento(new Boleto());
+        pagamento.processarPagamento(valor);
+
+        pagamento.setPagamento(new CartaoCredito());
+        pagamento.processarPagamento(valor);
+
+        pagamento.setPagamento(new Pix());
+        pagamento.processarPagamento(valor);
+
+        pagamento.setPagamento(new ValePresente());
+        pagamento.processarPagamento(valor);
+    }
+}
+
+```
+
+---
+
+### 28. Singleton para configurações globais
