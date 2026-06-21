@@ -816,5 +816,88 @@ O sistema deve conter:
 - validação para impedir que uma estratégia ultrapasse o desconto máximo.
 Explique por que essa solução combina Strategy e Singleton.
 
+```java
+public class ConfiguracaoDesconto {
+    private static ConfiguracaoDesconto instancia;
+    private double descontoMaximo;
 
+    private ConfiguracaoDesconto() {
+        descontoMaximo = 0.15;
+    }
 
+    public static ConfiguracaoDesconto getInstance() {
+        if(instancia == null) {
+            instancia = new ConfiguracaoDesconto();
+        }
+        return instancia;
+    }
+
+    public double getDescontoMaximo() {
+        return descontoMaximo;
+    }
+
+    public void setDescontoMaximo(double descontoMaximo) {
+        this.descontoMaximo = descontoMaximo;
+    }
+}
+
+public interface EstrategiaDesconto {
+    double calcularDesconto(double valorCompra);
+}
+
+public class DescontoComum implements EstrategiaDesconto {
+
+    @Override
+    public double calcularDesconto(double valorCompra) {
+        double desconto = valorCompra * 0.05;
+
+        double limite = ConfiguracaoDesconto.getInstance().getDescontoMaximo();
+
+        return Math.min(desconto, valorCompra * limite);
+    }
+}
+
+public class DescontoVIP implements EstrategiaDesconto {
+
+    @Override
+    public double calcularDesconto(double valorCompra) {
+        double desconto = valorCompra * 0.10;
+
+        double limite = ConfiguracaoDesconto.getInstance().getDescontoMaximo();
+
+        return Math.min(desconto, valorCompra * limite);
+    }
+}
+
+public class CalculadoraDesconto {
+    private EstrategiaDesconto estrategia;
+
+    public void setEstrategia(EstrategiaDesconto estrategia) {
+        this.estrategia = estrategia;
+    }
+
+    public double calcular(double valorCompra) {
+        return estrategia.calcularDesconto(valorCompra);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+
+        ConfiguracaoDesconto.getInstance().setDescontoMaximo(0.15);
+
+        CalculadoraDesconto calculadora = new CalculadoraDesconto();
+
+        calculadora.setEstrategia(new DescontoVIP());
+
+        double desconto = calculadora.calcular(1000);
+
+        System.out.println(desconto);
+    }
+}
+```
+A solução combina Strategy e Singleton porque cada tipo de cliente possui uma estratégia própria de cálculo de desconto (Strategy), enquanto a configuração do desconto máximo é compartilhada por todo o sistema através de uma única instância de ConfiguracaoDesconto (Singleton). Dessa forma, as regras de cálculo permanecem flexíveis e as configurações globais permanecem centralizadas e consistentes.
+
+---
+
+### 30. Adapter para integração de fornecedores
